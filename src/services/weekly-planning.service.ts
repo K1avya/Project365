@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
-import { CapacityEngine, type TaskDurationItem } from "../domain/capacity/capacity-engine.js";
-import { PrismaCapacitySnapshotRepository } from "../repositories/capacity-snapshot.repository.js";
-import { PrismaWeeklyPlanRepository } from "../repositories/weekly-plan.repository.js";
+import { CapacityEngine, type TaskDurationItem } from "../domain/capacity/capacity-engine";
+import { PrismaCapacitySnapshotRepository } from "../repositories/capacity-snapshot.repository";
+import { PrismaWeeklyPlanRepository } from "../repositories/weekly-plan.repository";
 
 export interface SundayRealityCheckInput {
   userId: string;

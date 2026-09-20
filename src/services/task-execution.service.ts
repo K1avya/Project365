@@ -1,8 +1,8 @@
 import { Prisma, type PrismaClient } from "@prisma/client";
-import type { TaskInstanceResponseDTO } from "../dtos/task.dto.js";
-import type { TaskStatus } from "../domain/types.js";
+import type { TaskInstanceResponseDTO } from "../dtos/task.dto";
+import type { TaskStatus } from "../domain/types";
 
-import { NotFoundError, ConcurrencyConflictError } from "../lib/errors.js";
+import { NotFoundError, ConcurrencyConflictError } from "../lib/errors";
 
 export { ConcurrencyConflictError, NotFoundError };
 

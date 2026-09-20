@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
-import { JobRunner, type JobExecutionResult } from "./job-runner.js";
-import { TaskInstanceApplicationService } from "../services/task-instance-app.service.js";
-import { TimezoneService } from "../domain/time/timezone-service.js";
+import { JobRunner, type JobExecutionResult } from "./job-runner";
+import { TaskInstanceApplicationService } from "../services/task-instance-app.service";
+import { TimezoneService } from "../domain/time/timezone-service";
 
 export async function runGenerateDailyInstancesJob(
   prisma: PrismaClient,

@@ -1,12 +1,12 @@
 import type { PrismaClient } from "@prisma/client";
-import { PrismaLifeAreaRepository } from "../repositories/life-area.repository.js";
-import { NotFoundError } from "../lib/errors.js";
+import { PrismaLifeAreaRepository } from "../repositories/life-area.repository";
+import { NotFoundError } from "../lib/errors";
 import type {
   CreateLifeAreaRequestDTO,
   UpdateLifeAreaRequestDTO,
   LifeAreaResponseDTO,
-} from "../dtos/life-area.dto.js";
-import type { AreaIntensity } from "../domain/types.js";
+} from "../dtos/life-area.dto";
+import type { AreaIntensity } from "../domain/types";
 
 export class LifeAreaApplicationService {
   private repo: PrismaLifeAreaRepository;

@@ -1,4 +1,4 @@
-import type { LifeAreaType, AreaIntensity } from "../domain/types.js";
+import type { LifeAreaType, AreaIntensity } from "../domain/types";
 
 export interface CreateLifeAreaRequestDTO {
   type: LifeAreaType;

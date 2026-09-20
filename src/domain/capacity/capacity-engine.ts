@@ -1,4 +1,4 @@
-import type { Commitment } from "../types.js";
+import type { Commitment } from "../types";
 
 export interface TaskDurationItem {
   id?: string;

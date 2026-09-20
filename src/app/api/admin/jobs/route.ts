@@ -1,6 +1,6 @@
-﻿import { NextResponse } from "next/server";
-import { prisma } from "../../../../lib/prisma.js";
-import { PrismaJobExecutionRepository } from "../../../../repositories/job-execution.repository.js";
+import { NextResponse } from "next/server";
+import { prisma } from "../../../../lib/prisma";
+import { PrismaJobExecutionRepository } from "../../../../repositories/job-execution.repository";
 
 const lockRepo = new PrismaJobExecutionRepository(prisma);
 

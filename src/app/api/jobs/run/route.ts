@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../../lib/prisma.js";
-import { runGenerateDailyInstancesJob } from "../../../../jobs/generate-daily-instances.job.js";
-import { runCreateCapacitySnapshotsJob } from "../../../../jobs/create-capacity-snapshots.job.js";
-import { runStaleTaskDetectorJob } from "../../../../jobs/stale-task-detector.job.js";
-import { runWeeklyReviewJob } from "../../../../jobs/weekly-review.job.js";
-import { enforceRateLimit } from "../../../../lib/rate-limiter.js";
+import { prisma } from "../../../../lib/prisma";
+import { runGenerateDailyInstancesJob } from "../../../../jobs/generate-daily-instances.job";
+import { runCreateCapacitySnapshotsJob } from "../../../../jobs/create-capacity-snapshots.job";
+import { runStaleTaskDetectorJob } from "../../../../jobs/stale-task-detector.job";
+import { runWeeklyReviewJob } from "../../../../jobs/weekly-review.job";
+import { enforceRateLimit } from "../../../../lib/rate-limiter";
 
 const VALID_JOBS = [
   "generate-daily-instances",

@@ -1,6 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
-import { PrismaJobExecutionRepository } from "../repositories/job-execution.repository.js";
-import { logger } from "../lib/logger.js";
+import { PrismaJobExecutionRepository } from "../repositories/job-execution.repository";
+import { logger } from "../lib/logger";
 
 export interface JobExecutionResult {
   ran: boolean;

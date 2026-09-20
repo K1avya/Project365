@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../lib/prisma.js";
-import { logger } from "../../../lib/logger.js";
-import { TimezoneService } from "../../../domain/time/timezone-service.js";
+import { prisma } from "../../../lib/prisma";
+import { logger } from "../../../lib/logger";
+import { TimezoneService } from "../../../domain/time/timezone-service";
 
 export async function GET() {
   const startTime = performance.now();

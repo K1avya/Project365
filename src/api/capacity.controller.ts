@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
-import { CapacityEngine } from "../domain/capacity/capacity-engine.js";
-import { WeeklyPlanningService } from "../services/weekly-planning.service.js";
-import { PrismaCapacitySnapshotRepository } from "../repositories/capacity-snapshot.repository.js";
+import { CapacityEngine } from "../domain/capacity/capacity-engine";
+import { WeeklyPlanningService } from "../services/weekly-planning.service";
+import { PrismaCapacitySnapshotRepository } from "../repositories/capacity-snapshot.repository";
 
 export class CapacityController {
   private capacityEngine = new CapacityEngine();

@@ -1,17 +1,17 @@
 import type { PrismaClient } from "@prisma/client";
-import { PrismaTaskInstanceRepository } from "../repositories/task-instance.repository.js";
-import { PrismaTaskRepository } from "../repositories/task.repository.js";
-import { PrismaEventRepository } from "../repositories/event.repository.js";
-import { TaskExecutionService, ConcurrencyConflictError } from "./task-execution.service.js";
-import { NotFoundError } from "../lib/errors.js";
-import { TimezoneService } from "../domain/time/timezone-service.js";
-import { InstanceGenerator } from "../domain/tasks/instance-generator.js";
-import type { TaskStatus, TaskEventType } from "../domain/types.js";
+import { PrismaTaskInstanceRepository } from "../repositories/task-instance.repository";
+import { PrismaTaskRepository } from "../repositories/task.repository";
+import { PrismaEventRepository } from "../repositories/event.repository";
+import { TaskExecutionService, ConcurrencyConflictError } from "./task-execution.service";
+import { NotFoundError } from "../lib/errors";
+import { TimezoneService } from "../domain/time/timezone-service";
+import { InstanceGenerator } from "../domain/tasks/instance-generator";
+import type { TaskStatus, TaskEventType } from "../domain/types";
 import type {
   TaskInstanceResponseDTO,
   UpdateTaskStatusRequestDTO,
-} from "../dtos/task.dto.js";
-import type { TaskEventResponseDTO } from "../dtos/event.dto.js";
+} from "../dtos/task.dto";
+import type { TaskEventResponseDTO } from "../dtos/event.dto";
 
 export { ConcurrencyConflictError, NotFoundError };
 

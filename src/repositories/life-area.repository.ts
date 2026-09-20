@@ -1,5 +1,5 @@
 import type { PrismaClient, LifeArea as PrismaLifeArea } from "@prisma/client";
-import type { LifeAreaType, AreaIntensity } from "../domain/types.js";
+import type { LifeAreaType, AreaIntensity } from "../domain/types";
 
 export interface CreateLifeAreaInput {
   userId: string;

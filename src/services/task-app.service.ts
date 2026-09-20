@@ -1,8 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
-import { PrismaTaskRepository, type CreateTaskInput, type UpdateTaskInput } from "../repositories/task.repository.js";
-import { DAGService } from "../domain/tasks/dag-service.js";
-import type { TaskResponseDTO } from "../dtos/task.dto.js";
-import { NotFoundError } from "../lib/errors.js";
+import { PrismaTaskRepository, type CreateTaskInput, type UpdateTaskInput } from "../repositories/task.repository";
+import { DAGService } from "../domain/tasks/dag-service";
+import type { TaskResponseDTO } from "../dtos/task.dto";
+import { NotFoundError } from "../lib/errors";
 
 export interface CreateTaskWithDependenciesInput extends Partial<CreateTaskInput> {
   userId?: string;

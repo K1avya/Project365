@@ -1,5 +1,5 @@
-import type { Priority, EnergyLevel, TaskStatus } from "../domain/types.js";
-import type { TaskEventResponseDTO } from "./event.dto.js";
+import type { Priority, EnergyLevel, TaskStatus } from "../domain/types";
+import type { TaskEventResponseDTO } from "./event.dto";
 
 export interface CreateTaskRequestDTO {
   areaId: string;

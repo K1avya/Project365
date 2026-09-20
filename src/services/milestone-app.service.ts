@@ -1,11 +1,11 @@
 import type { PrismaClient } from "@prisma/client";
-import { PrismaMilestoneRepository } from "../repositories/milestone.repository.js";
-import { NotFoundError } from "../lib/errors.js";
+import { PrismaMilestoneRepository } from "../repositories/milestone.repository";
+import { NotFoundError } from "../lib/errors";
 import type {
   CreateMilestoneRequestDTO,
   UpdateMilestoneRequestDTO,
   MilestoneResponseDTO,
-} from "../dtos/milestone.dto.js";
+} from "../dtos/milestone.dto";
 
 export class MilestoneApplicationService {
   private repo: PrismaMilestoneRepository;

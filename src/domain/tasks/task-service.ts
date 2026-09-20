@@ -1,4 +1,4 @@
-import type { Task, Priority, EnergyLevel } from "../types.js";
+import type { Task, Priority, EnergyLevel } from "../types";
 
 export interface CreateTaskDTO {
   userId: string;

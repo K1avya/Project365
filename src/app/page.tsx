@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState, useTransition, useMemo } from "react";
-import type { TaskInstanceResponseDTO } from "../dtos/task.dto.js";
-import type { CapacityRemainingResponseDto } from "../dtos/capacity.dto.js";
-import type { LifeAreaResponseDTO } from "../dtos/life-area.dto.js";
+import type { TaskInstanceResponseDTO } from "../dtos/task.dto";
+import type { CapacityRemainingResponseDto } from "../dtos/capacity.dto";
+import type { LifeAreaResponseDTO } from "../dtos/life-area.dto";
 import {
   Calendar as CalendarIcon,
   RefreshCw,

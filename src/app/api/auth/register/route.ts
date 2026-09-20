@@ -1,8 +1,8 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "../../../../lib/prisma.js";
-import { OnboardingService } from "../../../../services/onboarding.service.js";
-import { enforceRateLimit } from "../../../../lib/rate-limiter.js";
+import { prisma } from "../../../../lib/prisma";
+import { OnboardingService } from "../../../../services/onboarding.service";
+import { enforceRateLimit } from "../../../../lib/rate-limiter";
 
 const onboardingService = new OnboardingService(prisma);
 

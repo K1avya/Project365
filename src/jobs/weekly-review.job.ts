@@ -1,8 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
-import { JobRunner, type JobExecutionResult } from "./job-runner.js";
-import { WeeklyReviewApplicationService } from "../services/weekly-review-app.service.js";
-import { AnalyticsApplicationService } from "../services/analytics-app.service.js";
-import { TimezoneService } from "../domain/time/timezone-service.js";
+import { JobRunner, type JobExecutionResult } from "./job-runner";
+import { WeeklyReviewApplicationService } from "../services/weekly-review-app.service";
+import { AnalyticsApplicationService } from "../services/analytics-app.service";
+import { TimezoneService } from "../domain/time/timezone-service";
 
 export async function runWeeklyReviewJob(
   prisma: PrismaClient,

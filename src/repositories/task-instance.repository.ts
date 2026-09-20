@@ -1,5 +1,5 @@
 import { Prisma, type PrismaClient, type TaskInstance as PrismaTaskInstance } from "@prisma/client";
-import type { TaskStatus, Priority, EnergyLevel } from "../domain/types.js";
+import type { TaskStatus, Priority, EnergyLevel } from "../domain/types";
 
 export interface CreateInstanceInput {
   userId: string;

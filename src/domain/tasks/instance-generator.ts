@@ -1,5 +1,5 @@
-﻿import type { Task, TaskInstance, TaskStatus } from "../types.js";
-import { DAGService, type DependencyEdge } from "./dag-service.js";
+import type { Task, TaskInstance, TaskStatus } from "../types";
+import { DAGService, type DependencyEdge } from "./dag-service";
 
 export interface GenerationContext {
   targetDate: Date;

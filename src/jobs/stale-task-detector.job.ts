@@ -1,6 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
-import { JobRunner, type JobExecutionResult } from "./job-runner.js";
-import { TimezoneService } from "../domain/time/timezone-service.js";
+import { JobRunner, type JobExecutionResult } from "./job-runner";
+import { TimezoneService } from "../domain/time/timezone-service";
 
 export async function runStaleTaskDetectorJob(
   prisma: PrismaClient,

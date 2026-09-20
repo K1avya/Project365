@@ -1,4 +1,4 @@
-import type { TaskEventResponseDTO } from "../dtos/event.dto.js";
+import type { TaskEventResponseDTO } from "../dtos/event.dto";
 
 /**
  * Derives exact elapsed work milliseconds from the append-only event stream.

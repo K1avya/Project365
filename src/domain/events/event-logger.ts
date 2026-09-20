@@ -1,4 +1,4 @@
-﻿import type { TaskEvent, TaskEventType, TaskStatus } from "../types.js";
+import type { TaskEvent, TaskEventType, TaskStatus } from "../types";
 
 export interface LogEventParams {
   taskInstanceId: string;

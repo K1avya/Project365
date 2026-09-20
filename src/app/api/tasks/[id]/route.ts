@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { getCurrentUserId } from "../../../../lib/auth.js";
-import { prisma } from "../../../../lib/prisma.js";
-import { TaskApplicationService } from "../../../../services/task-app.service.js";
-import { handleApiError } from "../../../../lib/errors.js";
+import { getCurrentUserId } from "../../../../lib/auth";
+import { prisma } from "../../../../lib/prisma";
+import { TaskApplicationService } from "../../../../services/task-app.service";
+import { handleApiError } from "../../../../lib/errors";
 
 const service = new TaskApplicationService(prisma);
 

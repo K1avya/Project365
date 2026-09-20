@@ -1,4 +1,4 @@
-import type { TaskEventType } from "../domain/types.js";
+import type { TaskEventType } from "../domain/types";
 
 export interface RecordTaskEventRequestDTO {
   eventType: TaskEventType;

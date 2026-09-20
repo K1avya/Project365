@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import type { CreateGoalWithMilestonesRequestDTO, GoalResponseDTO } from "../dtos/goal.dto.js";
+import type { CreateGoalWithMilestonesRequestDTO, GoalResponseDTO } from "../dtos/goal.dto";
 
 export class GoalService {
   constructor(private prisma: PrismaClient) {}

@@ -1,5 +1,5 @@
 import type { PrismaClient, Task as PrismaTask, TaskDependency } from "@prisma/client";
-import type { Priority, EnergyLevel } from "../domain/types.js";
+import type { Priority, EnergyLevel } from "../domain/types";
 
 export interface CreateTaskInput {
   userId: string;

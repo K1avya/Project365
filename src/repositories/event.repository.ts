@@ -1,5 +1,5 @@
 import { Prisma, type PrismaClient, type TaskEvent as PrismaTaskEvent } from "@prisma/client";
-import type { TaskEventType } from "../domain/types.js";
+import type { TaskEventType } from "../domain/types";
 
 export interface IEventRepository {
   append(

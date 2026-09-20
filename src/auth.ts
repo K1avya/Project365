@@ -3,8 +3,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
-import { prisma } from "./lib/prisma.js";
-import { OnboardingService } from "./services/onboarding.service.js";
+import { prisma } from "./lib/prisma";
+import { OnboardingService } from "./services/onboarding.service";
 
 const onboardingService = new OnboardingService(prisma);
 

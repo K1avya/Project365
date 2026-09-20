@@ -1,8 +1,8 @@
-import { prisma } from "./prisma.js";
-import { UnauthorizedError } from "./errors.js";
+import { prisma } from "./prisma";
+import { UnauthorizedError } from "./errors";
 
 
-import { auth } from "../auth.js";
+import { auth } from "../auth";
 
 /**
  * Authentication Boundary:

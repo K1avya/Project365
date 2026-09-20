@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
-import { JobRunner, type JobExecutionResult } from "./job-runner.js";
-import { CapacityApplicationService } from "../services/capacity-app.service.js";
-import { TimezoneService } from "../domain/time/timezone-service.js";
+import { JobRunner, type JobExecutionResult } from "./job-runner";
+import { CapacityApplicationService } from "../services/capacity-app.service";
+import { TimezoneService } from "../domain/time/timezone-service";
 
 export async function runCreateCapacitySnapshotsJob(
   prisma: PrismaClient,

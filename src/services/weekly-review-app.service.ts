@@ -1,10 +1,10 @@
 import type { PrismaClient } from "@prisma/client";
-import { TimezoneService } from "../domain/time/timezone-service.js";
+import { TimezoneService } from "../domain/time/timezone-service";
 import type {
   WeeklyReviewReportDto,
   SubmitWeeklyReviewRequestDto,
   TopBottleneckDto,
-} from "../dtos/weekly-review.dto.js";
+} from "../dtos/weekly-review.dto";
 
 export class WeeklyReviewApplicationService {
   constructor(private prisma: PrismaClient) {}

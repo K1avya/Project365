@@ -1,12 +1,12 @@
 import type { PrismaClient } from "@prisma/client";
-import { CapacityEngine } from "../domain/capacity/capacity-engine.js";
-import { TimezoneService } from "../domain/time/timezone-service.js";
-import { PrismaCapacitySnapshotRepository } from "../repositories/capacity-snapshot.repository.js";
+import { CapacityEngine } from "../domain/capacity/capacity-engine";
+import { TimezoneService } from "../domain/time/timezone-service";
+import { PrismaCapacitySnapshotRepository } from "../repositories/capacity-snapshot.repository";
 import type {
   CapacityRemainingResponseDto,
   DailyCapacityReportDto,
   WeeklyCapacityReportDto,
-} from "../dtos/capacity.dto.js";
+} from "../dtos/capacity.dto";
 
 export class CapacityApplicationService {
   private capacityEngine = new CapacityEngine();

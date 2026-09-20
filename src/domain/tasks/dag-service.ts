@@ -1,4 +1,4 @@
-import type { TaskStatus } from "../types.js";
+import type { TaskStatus } from "../types";
 
 export const MAX_DEPENDENCY_DEPTH = 20;
 

@@ -1,13 +1,13 @@
 import type { PrismaClient } from "@prisma/client";
-import { TimezoneService } from "../domain/time/timezone-service.js";
-import { PrismaAnalyticsSnapshotRepository } from "../repositories/analytics-snapshot.repository.js";
+import { TimezoneService } from "../domain/time/timezone-service";
+import { PrismaAnalyticsSnapshotRepository } from "../repositories/analytics-snapshot.repository";
 import type {
   ExecutionRateDto,
   CapacityUtilizationDto,
   PlanningAccuracyDto,
   AnalyticsSummaryDto,
   UtilizationHealth,
-} from "../dtos/analytics.dto.js";
+} from "../dtos/analytics.dto";
 
 export class AnalyticsApplicationService {
   private snapshotRepo: PrismaAnalyticsSnapshotRepository;

@@ -1,8 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
-import { PrismaGoalRepository } from "../repositories/goal.repository.js";
-import { PrismaMilestoneRepository } from "../repositories/milestone.repository.js";
-import type { GoalResponseDTO, MilestoneResponseDTO } from "../dtos/goal.dto.js";
-import { NotFoundError } from "../lib/errors.js";
+import { PrismaGoalRepository } from "../repositories/goal.repository";
+import { PrismaMilestoneRepository } from "../repositories/milestone.repository";
+import type { GoalResponseDTO, MilestoneResponseDTO } from "../dtos/goal.dto";
+import { NotFoundError } from "../lib/errors";
 
 export class GoalApplicationService {
   private goalRepo: PrismaGoalRepository;
