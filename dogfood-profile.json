@@ -1,0 +1,69 @@
+﻿{
+  "user": {
+    "email": "user@project365.local",
+    "name": "Kavya / Project365 Founder",
+    "dayStartHour": 6,
+    "logicalDayCutoffHour": 1,
+    "dailySleepHours": 6.5
+  },
+  "lifeAreas": [
+    {
+      "type": "ACADEMIC",
+      "name": "Academic & University",
+      "color": "#3b82f6",
+      "intensity": "INTENSIVE"
+    },
+    {
+      "type": "STARTUP",
+      "name": "HETONIX Startup & Grants",
+      "color": "#8b5cf6",
+      "intensity": "INTENSIVE"
+    },
+    {
+      "type": "HEALTH",
+      "name": "Gym, Sleep & Longevity",
+      "color": "#10b981",
+      "intensity": "NORMAL"
+    },
+    {
+      "type": "PERSONAL",
+      "name": "Research & Content Creation",
+      "color": "#f59e0b",
+      "intensity": "NORMAL"
+    }
+  ],
+  "commitments": [
+    {
+      "title": "College Lectures & Labs",
+      "type": "COLLEGE",
+      "startMinute": 540,
+      "endMinute": 900,
+      "durationMinutes": 360,
+      "recurrenceDays": [1, 2, 3, 4, 5]
+    },
+    {
+      "title": "Morning Bus Commute",
+      "type": "COMMUTE",
+      "startMinute": 420,
+      "endMinute": 540,
+      "durationMinutes": 120,
+      "recurrenceDays": [1, 2, 3, 4, 5]
+    },
+    {
+      "title": "Evening Bus Commute Return",
+      "type": "COMMUTE",
+      "startMinute": 900,
+      "endMinute": 990,
+      "durationMinutes": 90,
+      "recurrenceDays": [1, 2, 3, 4, 5]
+    },
+    {
+      "title": "Dinner & Family",
+      "type": "ROUTINE_MEALS",
+      "startMinute": 1200,
+      "endMinute": 1230,
+      "durationMinutes": 30,
+      "recurrenceDays": [0, 1, 2, 3, 4, 5, 6]
+    }
+  ]
+}

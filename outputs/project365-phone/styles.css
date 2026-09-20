@@ -1,0 +1,1599 @@
+/* ============================================================
+   Project365 v3 — Discipline Tracker
+   Dark Glassmorphism Design System
+   ============================================================ */
+
+/* ── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@700&display=swap');
+
+/* ── 0. Design Tokens ─────────────────────────────────────── */
+:root {
+  --bg-primary:      #0a0a0f;
+  --bg-secondary:    #111827;
+  --bg-tertiary:     #1e293b;
+  --bg-glass:        rgba(17, 24, 39, 0.7);
+  --bg-glass-light:  rgba(30, 41, 59, 0.5);
+
+  --accent-cyan:     #06b6d4;
+  --accent-purple:   #8b5cf6;
+  --accent-green:    #10b981;
+  --accent-amber:    #f59e0b;
+  --accent-red:      #ef4444;
+  --accent-pink:     #ec4899;
+
+  --text-primary:    #f1f5f9;
+  --text-secondary:  #cbd5e1;
+  --text-muted:      #64748b;
+
+  --border:          rgba(148, 163, 184, 0.12);
+
+  --glow-cyan:       0 0 20px rgba(6, 182, 212, 0.3);
+  --glow-purple:     0 0 20px rgba(139, 92, 246, 0.3);
+  --glow-green:      0 0 15px rgba(16, 185, 129, 0.25);
+
+  --shadow:          0 10px 40px rgba(0, 0, 0, 0.4);
+
+  --radius:          12px;
+  --radius-lg:       16px;
+  --radius-full:     999px;
+}
+
+/* ============================================================
+   1. CSS Reset & Base
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ============================================================
+   2. App Shell
+   ============================================================ */
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+/* ── Topbar ────────────────────────────────────────────────── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  padding-top: calc(10px + env(safe-area-inset-top, 0px));
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar h1 {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.topbar .eyebrow {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* ── Content ───────────────────────────────────────────────── */
+.content {
+  padding: 14px 12px;
+  padding-bottom: 100px;
+  overflow-y: auto;
+}
+
+/* ============================================================
+   3. Screens
+   ============================================================ */
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: grid;
+  gap: 12px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ============================================================
+   4. Bottom Navigation
+   ============================================================ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: rgba(10, 10, 15, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 50px;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-button .nav-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.nav-button.active {
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+  box-shadow: inset 0 0 12px rgba(6, 182, 212, 0.08);
+}
+
+.nav-button .nav-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--accent-cyan);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-button.active .nav-dot {
+  opacity: 1;
+}
+
+/* ============================================================
+   5. Timer Styles
+   ============================================================ */
+
+/* ── Timer Ring (circular SVG) ─────────────────────────────── */
+.timer-container {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  padding: 12px;
+}
+
+.timer-ring {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-ring svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-ring circle {
+  fill: none;
+  stroke-width: 4;
+}
+
+.timer-ring .track {
+  stroke: rgba(148, 163, 184, 0.1);
+}
+
+.timer-ring .progress {
+  stroke: var(--accent-cyan);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-ring .timer-inner {
+  text-align: center;
+  z-index: 1;
+}
+
+.timer-ring .timer-digits {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.timer-ring .timer-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ── Session Timer (linear bar variant) ────────────────────── */
+.session-timer {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--bg-tertiary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-timer .timer-digits {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.session-timer.urgent {
+  animation: pulse 1.5s infinite;
+  border: 1px solid var(--accent-red);
+}
+
+.session-timer.warning {
+  border: 1px solid var(--accent-amber);
+}
+
+.session-timer.safe {
+  border: 1px solid var(--accent-green);
+}
+
+/* ============================================================
+   6. Panels & Cards
+   ============================================================ */
+.panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.panel.current {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.15));
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.panel.current h2 {
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+/* ============================================================
+   7. Gift Card
+   ============================================================ */
+.gift-card {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.15));
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.gift-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(transparent, rgba(255, 255, 255, 0.03), transparent 30%);
+  animation: rotate 4s linear infinite;
+}
+
+.gift-card .gift-emoji {
+  font-size: 48px;
+  margin-bottom: 8px;
+  display: block;
+  animation: bounceIn 0.6s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.gift-card .gift-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+}
+
+.gift-card .gift-dismiss {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  min-height: 32px;
+  font-size: 18px;
+  padding: 0 8px;
+  border: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* ============================================================
+   8. Session List
+   ============================================================ */
+.session-list {
+  display: grid;
+  gap: 6px;
+}
+
+.session-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 12px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+}
+
+.session-row:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.session-row .session-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.session-row .session-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.session-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ============================================================
+   9. Status Badges
+   ============================================================ */
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.pending {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+}
+
+.status.in_progress {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-cyan);
+}
+
+.status.completed {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-green);
+}
+
+.status.missed {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+}
+
+.status.workshop_override {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent-purple);
+}
+
+.status.locked {
+  background: rgba(100, 116, 139, 0.1);
+  color: #475569;
+}
+
+/* ============================================================
+   10. Buttons
+   ============================================================ */
+button {
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent-cyan);
+  color: var(--bg-primary);
+  min-height: 40px;
+  padding: 0 16px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--glow-cyan);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.secondary {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--text-secondary);
+}
+
+button.secondary:hover {
+  background: rgba(148, 163, 184, 0.25);
+}
+
+button.danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.actions.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ============================================================
+   11. Backlog Styles
+   ============================================================ */
+.backlog-locked-msg {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.backlog-locked-msg .lock-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.backlog-row {
+  padding: 12px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 8px;
+}
+
+.backlog-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+}
+
+.backlog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.backlog-row.urgent-high {
+  border-left: 3px solid var(--accent-red);
+}
+
+.backlog-row.urgent-medium {
+  border-left: 3px solid var(--accent-amber);
+}
+
+.backlog-row.urgent-low {
+  border-left: 3px solid var(--accent-green);
+}
+
+/* ── Segmented Control ─────────────────────────────────────── */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+/* ── Badge ─────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--accent-red);
+  color: white;
+}
+
+/* ============================================================
+   12. Hours Page
+   ============================================================ */
+.hours-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.hours-card {
+  padding: 14px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 8px;
+}
+
+.hours-card .hours-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.hours-card .hours-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.hours-card .hours-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.hours-card .hours-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.hours-bar {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: rgba(148, 163, 184, 0.1);
+  overflow: hidden;
+}
+
+.hours-bar span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+  transition: width 0.5s ease;
+}
+
+/* ============================================================
+   13. Calendar Page
+   ============================================================ */
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.calendar-nav button {
+  min-height: 36px;
+  min-width: 36px;
+  padding: 0;
+  font-size: 16px;
+}
+
+.calendar-nav .cal-month {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-header {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 8px 0;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  background: var(--bg-glass-light);
+  border: 1px solid transparent;
+}
+
+.calendar-day:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.calendar-day.today {
+  border-color: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.calendar-day.has-backlog {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.calendar-day.backlog-done {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+}
+
+.calendar-day .day-num {
+  font-weight: 600;
+}
+
+.calendar-day .day-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--accent-red);
+  margin-top: 2px;
+}
+
+.calendar-day-detail {
+  margin-top: 12px;
+  padding: 14px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ============================================================
+   14. Settings Page
+   ============================================================ */
+.settings-list {
+  display: grid;
+  gap: 8px;
+}
+
+.setting-row {
+  padding: 14px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 8px;
+}
+
+.setting-row strong {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.setting-row input,
+.setting-row select,
+.setting-row textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 10px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.setting-row input:focus,
+.setting-row select:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+.workshop-banner {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ============================================================
+   15. Review Section
+   ============================================================ */
+.review-section {
+  display: grid;
+  gap: 8px;
+}
+
+.review-item {
+  padding: 10px 12px;
+  background: var(--bg-glass-light);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-cyan);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.review-item.good {
+  border-left-color: var(--accent-green);
+}
+
+.review-item.attention {
+  border-left-color: var(--accent-amber);
+}
+
+.review-item.tomorrow {
+  border-left-color: var(--accent-purple);
+}
+
+/* ============================================================
+   16. Metric Grid & Stats
+   ============================================================ */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.metric {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-glass-light);
+}
+
+.metric strong {
+  display: block;
+  font-size: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent-cyan);
+  line-height: 1.2;
+}
+
+.metric .metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.stat-row {
+  padding: 14px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 8px;
+}
+
+.discipline-score {
+  text-align: center;
+  padding: 16px;
+}
+
+.discipline-score .score-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.discipline-score .score-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   17. Progress Bar
+   ============================================================ */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+  transition: width 0.8s ease;
+}
+
+/* ============================================================
+   18. Toast Notifications
+   ============================================================ */
+.toast-container {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(90vw, 400px);
+  pointer-events: none;
+}
+
+.toast {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 13px;
+  animation: slideDown 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+
+.toast.success {
+  border-left: 3px solid var(--accent-green);
+}
+
+.toast.warning {
+  border-left: 3px solid var(--accent-amber);
+}
+
+.toast.info {
+  border-left: 3px solid var(--accent-cyan);
+}
+
+/* ============================================================
+   19. Dialog
+   ============================================================ */
+.entry-dialog {
+  width: min(94vw, 430px);
+  border: 0;
+  border-radius: var(--radius-lg);
+  padding: 0;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+}
+
+.entry-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.entry-dialog form {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.entry-dialog h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.field label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 10px;
+  width: 100%;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+.entry-dialog menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ============================================================
+   20. Countdown (Pre-Start)
+   ============================================================ */
+.countdown-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  gap: 16px;
+}
+
+.countdown-screen .countdown-days {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 72px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.countdown-screen .countdown-label {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   21. Free Time Block
+   ============================================================ */
+.free-time-row {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.05);
+  border: 1px dashed rgba(148, 163, 184, 0.15);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* ============================================================
+   22. Animations
+   ============================================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(6, 182, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+  }
+}
+
+/* ============================================================
+   23. Responsive — Tablet / Desktop
+   ============================================================ */
+@media (min-width: 680px) {
+  .app {
+    max-width: 520px;
+    margin: 0 auto;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  .bottom-nav {
+    left: 50%;
+    width: 520px;
+    transform: translateX(-50%);
+  }
+}
+
+/* ============================================================
+   25. Score Hero Card
+   ============================================================ */
+.score-hero {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.12));
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.score-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(transparent, rgba(6, 182, 212, 0.04), transparent 30%);
+  animation: rotate 6s linear infinite;
+}
+
+.score-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 56px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+}
+
+.score-level {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.score-progress {
+  margin-top: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.score-progress .progress-bar {
+  height: 10px;
+  margin-bottom: 6px;
+}
+
+.score-next {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.level-badge.beginner { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+.level-badge.consistent { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+.level-badge.disciplined { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+.level-badge.iron { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); }
+.level-badge.elite { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+
+/* ============================================================
+   26. Failure Cost Card
+   ============================================================ */
+.failure-card {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.03));
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.failure-card h2 {
+  color: var(--accent-red);
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.failure-stats {
+  display: grid;
+  gap: 6px;
+}
+
+.failure-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.08);
+}
+
+.failure-stat:last-child {
+  border-bottom: 0;
+}
+
+.failure-stat .fail-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--accent-red);
+}
+
+.failure-total {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(239, 68, 68, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.failure-total .fail-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent-red);
+  animation: pulse 3s infinite;
+}
+
+/* ============================================================
+   27. Badge Grid
+   ============================================================ */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.badge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-glass-light);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.badge-card.unlocked {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow: var(--glow-cyan);
+  animation: fadeIn 0.5s ease;
+}
+
+.badge-card.locked {
+  border-style: dashed;
+  opacity: 0.35;
+  filter: grayscale(100%);
+}
+
+.badge-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.badge-card.unlocked .badge-emoji {
+  animation: bounceIn 0.6s ease;
+}
+
+.badge-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.badge-card.unlocked .badge-name {
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   28. Recovery Plan
+   ============================================================ */
+.recovery-card {
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.recovery-card.risk-low {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.recovery-card.risk-medium {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.03));
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.recovery-card.risk-high {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.03));
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.recovery-card.risk-critical {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.06));
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  animation: pulse 3s infinite;
+}
+
+.recovery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.recovery-header h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.risk-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.risk-badge.low { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+.risk-badge.medium { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+.risk-badge.high { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+.risk-badge.critical { background: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+.recovery-plan-item {
+  padding: 8px 12px;
+  background: var(--bg-glass-light);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recovery-plan-item .plan-day {
+  font-weight: 700;
+  color: var(--accent-cyan);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   29. Weekly Report
+   ============================================================ */
+.report-card {
+  padding: 14px;
+  background: var(--bg-glass-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.report-card:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.report-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.report-stat {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.report-stat strong {
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.report-score-change {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.report-score-change.positive { color: var(--accent-green); }
+.report-score-change.negative { color: var(--accent-red); }
+
+/* ============================================================
+   30. Calendar Heatmap Intensity
+   ============================================================ */
+.calendar-day.heat-0 {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.calendar-day.heat-1 {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.calendar-day.heat-2 {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.calendar-day.heat-3 {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.calendar-day.no-data {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* ============================================================
+   31. Print Styles for PDF Export
+   ============================================================ */
+@media print {
+  body {
+    background: white;
+    color: #111;
+  }
+
+  .bottom-nav,
+  .topbar,
+  .toast-container {
+    display: none !important;
+  }
+
+  .panel, .score-hero, .failure-card, .badge-card, .report-card {
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .score-value {
+    -webkit-text-fill-color: #111;
+    color: #111;
+  }
+
+  .progress-bar, .hours-bar {
+    background: #eee;
+  }
+
+  .progress-bar span, .hours-bar span {
+    background: #333;
+  }
+}
+
+/* ============================================================
+   24. Utility Classes
+   ============================================================ */
+.muted {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.gap-sm {
+  gap: 6px;
+}
+
+.gap-md {
+  gap: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ============================================================
+   25. Stop / Resume Timer + Backlog
+   ============================================================ */
+.session-timer.paused .timer-digits {
+  opacity: 0.5;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.pause-tag {
+  font-size: 10px;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid var(--accent-amber);
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-left: 6px;
+}

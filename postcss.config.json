@@ -1,0 +1,6 @@
+﻿{
+  "plugins": {
+    "tailwindcss": {},
+    "autoprefixer": {}
+  }
+}

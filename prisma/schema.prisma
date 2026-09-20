@@ -1,0 +1,446 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ ENUMS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+enum Priority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum EnergyLevel {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum LifeAreaType {
+  ACADEMIC
+  STARTUP
+  CAREER_CODING
+  HEALTH
+  PERSONAL
+}
+
+enum AreaIntensity {
+  INTENSIVE
+  NORMAL
+  MINIMAL
+  PAUSED
+}
+
+enum CommitmentType {
+  COLLEGE
+  COMMUTE
+  FAMILY
+  GYM_HEALTH
+  ROUTINE_MEALS
+  CUSTOM
+}
+
+enum TaskStatus {
+  BLOCKED
+  PENDING
+  ACTIVE
+  COMPLETED
+  MISSED
+  PAUSED
+  CANCELLED
+}
+
+enum TaskEventType {
+  CREATED
+  SCHEDULED
+  STARTED
+  PAUSED
+  RESUMED
+  COMPLETED
+  MISSED
+  CANCELLED
+  ARCHIVED
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ 1. CORE IDENTITY LAYER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+model User {
+  id                    String            @id @default(uuid())
+  email                 String            @unique
+  name                  String?
+  passwordHash          String?
+  emailVerified         DateTime?
+  image                 String?
+  startDate             DateTime          @default(now()) @db.Date
+  logicalDayCutoffHour  Int               @default(1)
+  dayStartHour          Int               @default(6)
+  dailySleepHours       Float             @default(7.0)
+  activeProfile         ActiveProfile     @default(REGULAR)
+  collegeLatitude       Float?
+  collegeLongitude      Float?
+  collegeRadiusMeters   Float             @default(250)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  accounts              Account[]
+  sessions              Session[]
+  energyProfile         EnergyProfile?
+  lifeAreas             LifeArea[]
+  commitments           Commitment[]
+  goals                 Goal[]
+  tasks                 Task[]
+  taskInstances         TaskInstance[]
+  weeklyPlans           WeeklyPlan[]
+  capacitySnapshots     CapacitySnapshot[]
+  analyticsSnapshots    AnalyticsSnapshot[]
+
+  @@map("users")
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ 2. PLANNING STRUCTURE LAYER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+model LifeArea {
+  id          String        @id @default(uuid())
+  userId      String
+  type        LifeAreaType
+  name        String
+  intensity   AreaIntensity @default(NORMAL)
+  color       String        @default("#06b6d4")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goals       Goal[]
+  tasks       Task[]
+
+  @@unique([userId, type])
+  @@map("life_areas")
+}
+
+model Goal {
+  id          String        @id @default(uuid())
+  userId      String
+  areaId      String
+  title       String
+  description String?
+  targetDate  DateTime?     @db.Date
+  isCompleted Boolean       @default(false)
+  isArchived  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lifeArea    LifeArea      @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  milestones  Milestone[]
+
+  @@index([userId, isArchived])
+  @@map("goals")
+}
+
+model Milestone {
+  id          String        @id @default(uuid())
+  goalId      String
+  title       String
+  description String?
+  orderIndex  Int           @default(0)
+  isCompleted Boolean       @default(false)
+  isArchived  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  goal        Goal          @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@index([goalId, isArchived])
+  @@map("milestones")
+}
+
+model Task {
+  id                  String              @id @default(uuid())
+  userId              String
+  areaId              String
+  milestoneId         String?
+  title               String
+  description         String?
+  priority            Priority            @default(MEDIUM)
+  energyRequired      EnergyLevel         @default(MEDIUM)
+  durationMinutes     Int                 // Constraint: durationMinutes > 0
+  preferredMinute     Int?                // 0..1439
+  isDeepWork          Boolean             @default(false)
+  recurrenceDays      Int[]               // [1,2,3,4,5]
+  isArchived          Boolean             @default(false)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  area                LifeArea            @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  milestone           Milestone?          @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  instances           TaskInstance[]
+
+  // DAG Dependencies
+  dependencies        TaskDependency[]    @relation("DependentTask")
+  prerequisites       TaskDependency[]    @relation("PrerequisiteTask")
+
+  @@index([userId, areaId, isArchived])
+  @@map("tasks")
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ 3. DEPENDENCY LAYER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+model TaskDependency {
+  id              String    @id @default(uuid())
+  taskId          String    // Dependent task (blocked until prerequisite finishes)
+  dependsOnTaskId String    // Prerequisite task (must finish first)
+  createdAt       DateTime  @default(now())
+
+  task            Task      @relation("DependentTask", fields: [taskId], references: [id], onDelete: Cascade)
+  prerequisite    Task      @relation("PrerequisiteTask", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnTaskId])
+  @@index([dependsOnTaskId])
+  @@map("task_dependencies")
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ 4. EXECUTION LAYER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+model TaskInstance {
+  id              String        @id @default(uuid())
+  userId          String
+  taskId          String
+  date            DateTime      @db.Date
+  title           String
+  priority        Priority
+  energyRequired  EnergyLevel   @default(MEDIUM)
+  durationMinutes Int
+  isDeepWork      Boolean       @default(false)
+  startMinute     Int?          // 0..1439
+  endMinute       Int?          // 0..1439
+  status          TaskStatus    @default(PENDING)
+  actualMinutes   Int           @default(0)
+  pausedMs        Int           @default(0)
+  metrics         Json?
+  completedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task            Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  events          TaskEvent[]
+
+  @@index([userId, date])
+  @@index([userId, status])
+  @@index([userId, date, status])
+  @@map("task_instances")
+}
+
+model TaskEvent {
+  id              String        @id @default(uuid())
+  taskInstanceId  String
+  eventType       TaskEventType
+  payload         Json?
+  createdAt       DateTime      @default(now())
+
+  instance        TaskInstance  @relation(fields: [taskInstanceId], references: [id], onDelete: Cascade)
+
+  @@index([taskInstanceId, createdAt])
+  @@map("task_events")
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ 5. CAPACITY LAYER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+model Commitment {
+  id              String          @id @default(uuid())
+  userId          String
+  title           String
+  type            CommitmentType  @default(COLLEGE)
+  startMinute     Int             // 0..1439
+  endMinute       Int             // 0..1439
+  durationMinutes Int             // > 0
+  recurrenceDays  Int[]           // [1,2,3,4,5]
+  isMandatory     Boolean         @default(true)
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@map("commitments")
+}
+
+model EnergyProfile {
+  id                        String      @id @default(uuid())
+  userId                    String      @unique
+  peakEnergyStartMinute     Int         @default(360)  // 06:00 AM
+  peakEnergyEndMinute       Int         @default(540)  // 09:00 AM
+  secondaryPeakStartMinute  Int?        @default(1260) // 09:00 PM
+  secondaryPeakEndMinute    Int?        @default(1410) // 11:30 PM
+  troughStartMinute         Int         @default(810)  // 01:30 PM
+  troughEndMinute           Int         @default(960)  // 04:00 PM
+  createdAt                 DateTime    @default(now())
+  updatedAt                 DateTime    @updatedAt
+
+  user                      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("energy_profiles")
+}
+
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ 6. PLANNING LAYER Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+
+model WeeklyPlan {
+  id              String                @id @default(uuid())
+  userId          String
+  weekStartDate   DateTime              @db.Date
+  weekEndDate     DateTime              @db.Date
+  currentVersion  Int                   @default(1)
+  status          String                @default("ACTIVE") // ACTIVE, COMPLETED
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revisions       WeeklyPlanRevision[]
+
+  @@unique([userId, weekStartDate])
+  @@index([userId, status])
+  @@map("weekly_plans")
+}
+
+model WeeklyPlanRevision {
+  id                    String      @id @default(uuid())
+  weeklyPlanId          String
+  version               Int         // Constraint: version > 0
+  grossAvailableHours   Float
+  committedHours        Float
+  netAvailableHours     Float
+  plannedHours          Float
+  actualHours           Float       @default(0.0)
+  isOverloaded          Boolean     @default(false)
+  overloadHours         Float       @default(0.0)
+  changeReason          String?
+  snapshotPayload       Json?
+  createdAt             DateTime    @default(now())
+
+  weeklyPlan            WeeklyPlan  @relation(fields: [weeklyPlanId], references: [id], onDelete: Cascade)
+
+  @@unique([weeklyPlanId, version])
+  @@map("weekly_plan_revisions")
+}
+
+// ─── 7. CAPACITY SNAPSHOT (Historical Analytics) ─────────────
+
+model CapacitySnapshot {
+  id                    String    @id @default(uuid())
+  userId                String
+  date                  DateTime  @db.Date
+  grossMinutes          Int
+  commitmentMinutes     Int
+  discretionaryMinutes  Int
+  plannedMinutes        Int
+  overloadMinutes       Int
+  createdAt             DateTime  @default(now())
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("capacity_snapshots")
+}
+
+// ─── 8. BACKGROUND JOBS & DISTRIBUTED LOCKING ────────────────
+
+model JobExecution {
+  id            String    @id @default(uuid())
+  jobName       String
+  logicalDate   DateTime  @db.Date
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+  status        String    // RUNNING, COMPLETED, FAILED, RETRY_PENDING, RETRY_FAILED
+  attemptCount  Int       @default(1)
+  lastError     String?
+  nextRetryAt   DateTime?
+  metadata      Json?
+
+  @@unique([jobName, logicalDate])
+  @@index([jobName, status])
+  @@map("job_executions")
+}
+
+// ─── 9. MATERIALIZED ANALYTICS SNAPSHOTS ─────────────────────
+
+model AnalyticsSnapshot {
+  id                   String    @id @default(uuid())
+  userId               String
+  snapshotDate         DateTime  @db.Date
+  periodDays           Int       @default(7) // 7, 30, or 90
+  analyticsVersion     Int       @default(1)
+  executionRate        Float
+  timeExecutionRate    Float
+  planningAccuracy     Float
+  capacityUtilization  Float
+  healthClassification String
+  backlogDelta         Int       @default(0)
+  createdAt            DateTime  @default(now())
+
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, snapshotDate, periodDays, analyticsVersion])
+  @@index([userId, snapshotDate])
+  @@map("analytics_snapshots")
+}
+
+// ─── ENUMS ─────────────────────────────────────────────────────────────
+
+enum ActiveProfile {
+  REGULAR
+  EXAM_PREP
+  HACKATHON
+  PLACEMENT
+  VACATION
+}
+
+// ─── 10. AUTH.JS (NEXTAUTH) MODELS ───────────────────────────
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="description" content="Project365 - Your 365-day discipline tracker. Stay focused, stay disciplined." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Project365 — 365 Day Discipline Tracker</title>
+  </head>
+  <body>
+    <div id="app" class="app">
+      <header class="topbar">
+        <div>
+          <p id="dayLabel" class="eyebrow">Project365</p>
+          <h1 id="screenTitle">Dashboard</h1>
+        </div>
+        <div id="topbarRight"></div>
+      </header>
+
+      <div id="toastContainer" class="toast-container"></div>
+
+      <main class="content">
+        <section id="dashboardScreen" class="screen active" aria-label="Dashboard"></section>
+        <section id="backlogScreen" class="screen" aria-label="Backlog"></section>
+        <section id="hoursScreen" class="screen" aria-label="Hours"></section>
+        <section id="calendarScreen" class="screen" aria-label="Calendar"></section>
+        <section id="settingsScreen" class="screen" aria-label="Settings"></section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Main navigation">
+        <button class="nav-button active" type="button" data-screen="dashboard" id="navDashboard">
+          <span class="nav-icon">📋</span>
+          <span>Today</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button class="nav-button" type="button" data-screen="backlog" id="navBacklog">
+          <span class="nav-icon">📦</span>
+          <span>Backlog</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button class="nav-button" type="button" data-screen="hours" id="navHours">
+          <span class="nav-icon">⏱️</span>
+          <span>Hours</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button class="nav-button" type="button" data-screen="calendar" id="navCalendar">
+          <span class="nav-icon">📅</span>
+          <span>Calendar</span>
+          <span class="nav-dot"></span>
+        </button>
+        <button class="nav-button" type="button" data-screen="settings" id="navSettings">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+          <span class="nav-dot"></span>
+        </button>
+      </nav>
+    </div>
+
+    <dialog id="entryDialog" class="entry-dialog">
+      <form method="dialog" id="entryForm">
+        <h2 id="entryTitle">Entry</h2>
+        <div id="entryFields"></div>
+        <menu>
+          <button value="cancel" type="submit" class="secondary">Cancel</button>
+          <button value="save" type="submit">Save</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <dialog id="collegeDialog" class="entry-dialog">
+      <form method="dialog" id="collegeForm">
+        <h2>🎓 College Attendance</h2>
+        <p class="muted">Did you attend college today?</p>
+        <menu>
+          <button value="no" type="submit" class="danger">No, I'm Home</button>
+          <button value="yes" type="submit">Yes, Attended</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
