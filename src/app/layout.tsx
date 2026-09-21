@@ -1,8 +1,22 @@
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-export const metadata = {
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
+export const metadata: Metadata = {
   title: "Project365 — 365 Day Discipline Tracker & Life OS",
   description: "Capacity-Aware, Event-Sourced Human Reality Operating System",
+  appleWebApp: {
+    capable: true,
+    title: "Project365",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export default function RootLayout({
