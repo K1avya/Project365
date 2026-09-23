@@ -28,10 +28,20 @@ import {
   ChevronRight,
   TrendingUp,
 } from "lucide-react";
+import {
+  ExecutionDecisionEngine,
+  clientProfileToActive,
+  inferEnvironmentFromCommitments,
+  type ExecutionCandidate,
+  type ExecutionEnvironment,
+  type ExecutionDevice,
+} from "../domain/execution/execution-decision-engine";
+import type { EnergyLevel } from "../domain/types";
 
 // ─── Constants & Reference Config ────────────────────────────
 const GOAL_DAYS = 365;
 const KEY = "project365.single_user.v1";
+const executionDecisionEngine = new ExecutionDecisionEngine();
 
 type AutoProfileRule = {
   id: string;
@@ -258,6 +268,47 @@ interface CommitmentItem {
   durationMinutes: number;
 }
 
+function backlogDurationMinutes(type: string): number {
+  const row = BASE_SCHEDULE.find(([t]) => t === type);
+  if (!row) return 60;
+  const st = minutesFromTime(row[2]);
+  let en = minutesFromTime(row[3]);
+  if (en <= st) en += 1440;
+  return en - st;
+}
+
+function backlogToExecutionCandidate(
+  item: BacklogItem,
+  pending: BacklogItem[]
+): ExecutionCandidate {
+  const isBlocked =
+    item.blockedBy?.some((depId) => {
+      const dep = pending.find((b) => b.id === depId);
+      return dep && dep.status !== "completed";
+    }) ?? false;
+
+  let unlocksCount = 0;
+  for (const other of pending) {
+    if (other.blockedBy?.includes(item.id)) unlocksCount++;
+  }
+
+  const deepTypes = new Set(["leetcode", "ai_ml", "startup", "college_work"]);
+  return {
+    id: item.id,
+    title: item.title,
+    source: "backlog",
+    priority: "MEDIUM",
+    energyRequired: deepTypes.has(item.type) ? "HIGH" : "MEDIUM",
+    durationMinutes: backlogDurationMinutes(item.type),
+    isDeepWork: deepTypes.has(item.type),
+    isBlocked,
+    objectiveTags: [item.type],
+    carryCount: item.carryCount,
+    sourceDateKey: item.sourceDate,
+    unlocksCount,
+  };
+}
+
 // ─── Main Component ──────────────────────────────────────────
 export default function Project365LifeOS() {
   // Navigation & Core State
@@ -293,6 +344,11 @@ export default function Project365LifeOS() {
   const [serverInstances, setServerInstances] = useState<TaskInstanceResponseDTO[]>([]);
   const [serverCommitments, setServerCommitments] = useState<CommitmentItem[]>([]);
   const [lifeAreas, setLifeAreas] = useState<LifeAreaResponseDTO[]>([]);
+
+  const [execEnvironment, setExecEnvironment] = useState<ExecutionEnvironment>("HOME");
+  const [execDevice, setExecDevice] = useState<ExecutionDevice>("LAPTOP");
+  const [execEnergy, setExecEnergy] = useState<EnergyLevel>("MEDIUM");
+  const [execAvailableMinutes, setExecAvailableMinutes] = useState(45);
 
   // Dialogs State
   const [activeDialog, setActiveDialog] = useState<"leetcode" | "aiml" | "startup" | "addTask" | "collegeAttendance" | "addBacklog" | null>(null);
@@ -565,6 +621,103 @@ export default function Project365LifeOS() {
     loadServerData();
   }, []);
 
+  // Roll forward missed sessions from previous days
+  useEffect(() => {
+    setDays((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      for (const day of Object.values(next)) {
+        if (day.date >= todayKey) continue;
+        const updatedSessions = day.sessions.map((s) => {
+          if (s.status !== "pending" && s.status !== "in_progress") return s;
+          changed = true;
+          return { ...s, status: "missed" as const };
+        });
+        if (updatedSessions !== day.sessions) {
+          next[day.date] = { ...day, sessions: updatedSessions };
+        }
+      }
+      if (!changed) return prev;
+
+      const newBacklog = [...backlog];
+      for (const day of Object.values(next)) {
+        if (day.date >= todayKey) continue;
+        for (const s of day.sessions) {
+          if (s.status !== "missed") continue;
+          if (newBacklog.some((b) => b.sourceSessionId === s.id)) continue;
+          newBacklog.unshift({
+            id: `backlog-${s.id}`,
+            sourceSessionId: s.id,
+            sourceDate: day.date,
+            title: s.title,
+            type: s.type,
+            status: "pending",
+            recoverySunday: getNextSunday(day.date),
+            carryCount: 0,
+            notes: "",
+          });
+        }
+      }
+      setBacklog(newBacklog);
+      persistClientState(next, newBacklog);
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayKey]);
+
+  // Auto-expire sessions whose time window has passed
+  useEffect(() => {
+    if (isWorkshopActive) return;
+    const day = days[todayKey];
+    if (!day) return;
+
+    const expired = day.sessions.filter(
+      (s) =>
+        (s.status === "pending" || s.status === "in_progress") && isSessionPast(s)
+    );
+    if (expired.length === 0) return;
+
+    setDays((prev) => {
+      const current = prev[todayKey];
+      if (!current) return prev;
+      const updatedSessions = current.sessions.map((s) => {
+        if (
+          (s.status === "pending" || s.status === "in_progress") &&
+          isSessionPast(s)
+        ) {
+          return { ...s, status: "missed" as const };
+        }
+        return s;
+      });
+      const newDays = { ...prev, [todayKey]: { ...current, sessions: updatedSessions } };
+
+      setBacklog((prevBacklog) => {
+        const updatedBacklog = [...prevBacklog];
+        for (const s of expired) {
+          if (updatedBacklog.some((b) => b.sourceSessionId === s.id)) continue;
+          updatedBacklog.unshift({
+            id: `backlog-${s.id}`,
+            sourceSessionId: s.id,
+            sourceDate: todayKey,
+            title: s.title,
+            type: s.type,
+            status: "pending",
+            recoverySunday: getNextSunday(todayKey),
+            carryCount: 0,
+            notes: "",
+          });
+        }
+        persistClientState(newDays, updatedBacklog);
+        setErrorMsg(`⏰ ${expired.map((s) => s.title).join(", ")} expired → Backlog`);
+        setTimeout(() => setErrorMsg(null), 4000);
+        return updatedBacklog;
+      });
+
+      return newDays;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nowMs, todayKey, isWorkshopActive]);
+
   // ─── Time Calculations ──────────────────────────────────────
   // Seconds Remaining in Day (6:00 AM -> 1:00 AM window = 19h = 68400s)
   function secondsRemainingInDay(): number {
@@ -598,6 +751,21 @@ export default function Project365LifeOS() {
     const nm = now.getHours() * 60 + now.getMinutes();
     const sm = minutesFromTime(s.startTime);
     return sm > nm;
+  }
+
+  function isSessionPast(s: SessionItem): boolean {
+    const now = new Date(nowMs);
+    const nm = now.getHours() * 60 + now.getMinutes();
+    let sm = minutesFromTime(s.startTime);
+    let em = minutesFromTime(s.endTime);
+    if (em <= sm) {
+      return nm >= em && nm < sm;
+    }
+    return nm >= em;
+  }
+
+  function canSubmitSession(s: SessionItem): boolean {
+    return isWithinTimeWindow(s) || s.status === "in_progress";
   }
 
   function secondsRemainingInSession(s: SessionItem): number {
@@ -741,6 +909,75 @@ export default function Project365LifeOS() {
     return list;
   }, [backlog, currentProfile, todayKey]);
 
+  useEffect(() => {
+    const d = new Date(nowMs);
+    const nowMinute = d.getHours() * 60 + d.getMinutes();
+    const inferred = inferEnvironmentFromCommitments(
+      nowMinute,
+      serverCommitments.map((c) => ({
+        type: c.type,
+        startMinute: c.startMinute,
+        endMinute: c.endMinute,
+      }))
+    );
+    setExecEnvironment(inferred);
+    setExecDevice(inferred === "COMMUTE" ? "MOBILE" : "LAPTOP");
+  }, [nowMs, serverCommitments]);
+
+  useEffect(() => {
+    if (capacity?.remainingMinutes && capacity.remainingMinutes > 0) {
+      setExecAvailableMinutes(Math.min(120, Math.max(15, capacity.remainingMinutes)));
+    }
+  }, [capacity?.remainingMinutes]);
+
+  const executionRecommendation = useMemo(() => {
+    const pendingBacklog = backlog.filter((b) => b.status === "pending");
+    const backlogCandidates = pendingBacklog.map((b) =>
+      backlogToExecutionCandidate(b, pendingBacklog)
+    );
+
+    const instanceCandidates: ExecutionCandidate[] = serverInstances
+      .filter((i) => i.status === "PENDING" || i.status === "ACTIVE" || i.status === "BLOCKED")
+      .map((inst) => ({
+        id: inst.id,
+        title: inst.title,
+        source: "task_instance" as const,
+        priority: inst.priority,
+        energyRequired: inst.energyRequired,
+        durationMinutes: inst.durationMinutes,
+        isDeepWork: inst.isDeepWork,
+        isBlocked:
+          inst.status === "BLOCKED" ||
+          (inst.prerequisites?.some((p) => !p.isCompleted) ?? false),
+        objectiveTags: inst.areaName ? [inst.areaName.toLowerCase().replace(/\s+/g, "_")] : [],
+        sourceDateKey: inst.date,
+        dbInstanceId: inst.id,
+      }));
+
+    const ctx = {
+      environment: execEnvironment,
+      device: execDevice,
+      availableMinutes: execAvailableMinutes,
+      energy: execEnergy,
+      connectivity: "ONLINE" as const,
+      activeProfile: clientProfileToActive(currentProfile),
+      todayDateKey: todayKey,
+    };
+
+    const merged = [...instanceCandidates, ...backlogCandidates];
+    if (merged.length === 0) return null;
+    return executionDecisionEngine.recommend(ctx, merged);
+  }, [
+    backlog,
+    serverInstances,
+    execEnvironment,
+    execDevice,
+    execAvailableMinutes,
+    execEnergy,
+    currentProfile,
+    todayKey,
+  ]);
+
   const totalLcSolved = useMemo(() => {
     return Object.values(leetcodeLogs).reduce((s, e) => s + Number(e.solved || 0), 0);
   }, [leetcodeLogs]);
@@ -808,6 +1045,16 @@ export default function Project365LifeOS() {
     }
 
     if (newStatus === "completed") {
+      if (!isWithinTimeWindow(session) && !isSessionPast(session)) {
+        setErrorMsg(`⏰ ${session.title} hasn't started yet!`);
+        setTimeout(() => setErrorMsg(null), 3000);
+        return;
+      }
+      if (isSessionPast(session) && session.status !== "in_progress") {
+        setErrorMsg(`⏰ ${session.title} time passed. Mark it missed or clear from backlog.`);
+        setTimeout(() => setErrorMsg(null), 3000);
+        return;
+      }
       if (session.type === "leetcode") {
         setTargetSessionForDialog(session);
         setActiveDialog("leetcode");
@@ -818,12 +1065,13 @@ export default function Project365LifeOS() {
         setActiveDialog("aiml");
         return;
       }
-      if (session.type === "college") {
-        setActiveDialog("collegeAttendance");
-      }
     }
 
     applySessionStatus(sessionId, newStatus);
+
+    if (newStatus === "completed" && session.type === "college") {
+      setActiveDialog("collegeAttendance");
+    }
   }
 
   function applySessionStatus(sessionId: string, newStatus: SessionItem["status"], notes: string = "") {
@@ -1069,6 +1317,61 @@ export default function Project365LifeOS() {
     setTimeout(() => setSuccessMsg(null), 3000);
   }
 
+  // Import backup JSON
+  function handleImportJSON() {
+    if (!confirm("Import will replace all local data. Export a backup first.\n\nContinue?")) return;
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(String(reader.result));
+          if (!imported || typeof imported !== "object") throw new Error("Invalid file");
+          const mergedSettings = { ...DEFAULT_SETTINGS, ...(imported.settings || {}) };
+          setSettings(mergedSettings);
+          setSettingsStartDate(mergedSettings.startDate);
+          setSettingsLcGoal(mergedSettings.leetcodeGoal);
+          setSettingsAiPhase(mergedSettings.aiPhase);
+          setSettingsCutoff(mergedSettings.logicalDayCutoffHour);
+          setSettingsNotifs(mergedSettings.notificationsEnabled);
+          if (imported.days) setDays(imported.days);
+          if (Array.isArray(imported.backlog)) setBacklog(imported.backlog);
+          if (imported.leetcode) setLeetcodeLogs(imported.leetcode);
+          if (imported.aiMl) setAiMlLogs(imported.aiMl);
+          if (imported.startup) setStartupLogs(imported.startup);
+          if (imported.collegeWork) setCollegeWorkLogs(imported.collegeWork);
+          if (Array.isArray(imported.giftsDismissed)) setGiftsDismissed(imported.giftsDismissed);
+          if (imported.timerPause) setTimerPause(imported.timerPause);
+          localStorage.setItem(
+            KEY,
+            JSON.stringify({
+              settings: mergedSettings,
+              days: imported.days || {},
+              backlog: imported.backlog || [],
+              giftsDismissed: imported.giftsDismissed || [],
+              timerPause: imported.timerPause || timerPause,
+              leetcode: imported.leetcode || {},
+              aiMl: imported.aiMl || {},
+              startup: imported.startup || {},
+              collegeWork: imported.collegeWork || {},
+            })
+          );
+          setSuccessMsg("Backup imported successfully!");
+          setTimeout(() => setSuccessMsg(null), 3000);
+        } catch {
+          setErrorMsg("Invalid backup file.");
+          setTimeout(() => setErrorMsg(null), 3000);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
   // PDF Export
   function handleExportPDF(type: "monthly" | "quarterly" | "yearly") {
     const w = window.open("", "_blank");
@@ -1300,6 +1603,108 @@ export default function Project365LifeOS() {
             </div>
           </article>
 
+          {/* Context-Aware Execution Decision */}
+          <article className="panel space-y-3 border-cyan-500/30">
+            <div className="flex justify-between items-start gap-2">
+              <div>
+                <p className="eyebrow text-cyan-400 flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5" /> Execute Now
+                </p>
+                <h2 className="font-bold text-white text-base leading-snug">
+                  What is the highest-value action you can take right now?
+                </h2>
+              </div>
+              {executionRecommendation && (
+                <span
+                  className={`badge text-[10px] shrink-0 ${
+                    executionRecommendation.contextFit === "excellent"
+                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      : executionRecommendation.contextFit === "good"
+                        ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                        : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                  }`}
+                >
+                  {executionRecommendation.contextFit} fit
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <label className="space-y-1">
+                <span className="text-slate-400">Environment</span>
+                <select
+                  className="input w-full"
+                  value={execEnvironment}
+                  onChange={(e) => setExecEnvironment(e.target.value as ExecutionEnvironment)}
+                >
+                  <option value="HOME">Home</option>
+                  <option value="COLLEGE">College</option>
+                  <option value="COMMUTE">Bus / Commute</option>
+                  <option value="LIBRARY">Library</option>
+                </select>
+              </label>
+              <label className="space-y-1">
+                <span className="text-slate-400">Device</span>
+                <select
+                  className="input w-full"
+                  value={execDevice}
+                  onChange={(e) => setExecDevice(e.target.value as ExecutionDevice)}
+                >
+                  <option value="MOBILE">Mobile</option>
+                  <option value="LAPTOP">Laptop</option>
+                </select>
+              </label>
+              <label className="space-y-1">
+                <span className="text-slate-400">Energy</span>
+                <select
+                  className="input w-full"
+                  value={execEnergy}
+                  onChange={(e) => setExecEnergy(e.target.value as EnergyLevel)}
+                >
+                  <option value="HIGH">High</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="LOW">Low</option>
+                </select>
+              </label>
+              <label className="space-y-1">
+                <span className="text-slate-400">Time available (min)</span>
+                <input
+                  type="number"
+                  min={5}
+                  max={480}
+                  className="input w-full"
+                  value={execAvailableMinutes}
+                  onChange={(e) => setExecAvailableMinutes(Number(e.target.value) || 15)}
+                />
+              </label>
+            </div>
+
+            {executionRecommendation ? (
+              <div className="rounded-lg bg-slate-900/60 border border-cyan-500/20 p-3 space-y-2">
+                <div className="flex justify-between items-start gap-2">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-slate-500">
+                      {executionRecommendation.candidate.source.replace("_", " ")}
+                    </p>
+                    <p className="font-bold text-white text-sm">{executionRecommendation.candidate.title}</p>
+                  </div>
+                  <span className="text-[10px] font-mono text-cyan-400">
+                    {executionRecommendation.candidate.durationMinutes}m
+                  </span>
+                </div>
+                <ul className="text-[11px] text-slate-400 space-y-0.5 list-disc pl-4">
+                  {executionRecommendation.reasons.slice(0, 4).map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500">
+                No executable candidates yet — add tasks or clear backlog dependencies.
+              </p>
+            )}
+          </article>
+
           {/* Dual Circular Timers */}
           <div className="timer-container panel">
             {/* Master Day Timer Ring */}
@@ -1429,7 +1834,8 @@ export default function Project365LifeOS() {
                 <button
                   type="button"
                   onClick={() => handleSessionAction(activeSession.id, "completed")}
-                  className="btn btn-emerald text-xs py-2"
+                  disabled={!canSubmitSession(activeSession)}
+                  className="btn btn-emerald text-xs py-2 disabled:opacity-40"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Done
                 </button>
@@ -1627,7 +2033,8 @@ export default function Project365LifeOS() {
                             <button
                               type="button"
                               onClick={() => handleSessionAction(s.id, "completed")}
-                              className="btn btn-emerald text-[10px] py-1 px-2 h-7"
+                              disabled={!canSubmitSession(s)}
+                              className="btn btn-emerald text-[10px] py-1 px-2 h-7 disabled:opacity-40"
                               title="Mark Done"
                             >
                               ✓
@@ -2540,6 +2947,19 @@ export default function Project365LifeOS() {
               </div>
             </div>
 
+            <div className="setting-row">
+              <strong className="text-white text-sm">🔔 Notifications</strong>
+              <label className="flex items-center gap-2 text-xs text-slate-300 mt-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settingsNotifs}
+                  onChange={(e) => setSettingsNotifs(e.target.checked)}
+                  className="rounded"
+                />
+                Enable session start and expiry reminders
+              </label>
+            </div>
+
             {/* Save Settings Button */}
             <button
               type="button"
@@ -2616,6 +3036,8 @@ export default function Project365LifeOS() {
                       aiMl: aiMlLogs,
                       startup: startupLogs,
                       collegeWork: collegeWorkLogs,
+                      giftsDismissed,
+                      timerPause,
                     };
                     const blob = new Blob([JSON.stringify(payload, null, 2)], {
                       type: "application/json",
@@ -2635,12 +3057,19 @@ export default function Project365LifeOS() {
                 </button>
                 <button
                   type="button"
+                  onClick={handleImportJSON}
+                  className="btn btn-secondary text-xs py-2 flex items-center justify-center gap-1.5"
+                >
+                  <Upload className="w-3.5 h-3.5" /> Import JSON
+                </button>
+                <button
+                  type="button"
                   onClick={() => {
                     if (!confirm("Reset all local Project365 data?")) return;
                     localStorage.removeItem(KEY);
                     window.location.reload();
                   }}
-                  className="btn btn-secondary text-rose-400 text-xs py-2 flex items-center justify-center gap-1.5"
+                  className="btn btn-secondary text-rose-400 text-xs py-2 flex items-center justify-center gap-1.5 col-span-2"
                 >
                   <RotateCcw className="w-3.5 h-3.5" /> Reset Local Data
                 </button>

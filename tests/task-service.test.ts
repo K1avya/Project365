@@ -29,7 +29,7 @@ describe("Module 2: Task Service", () => {
     expect(task.isArchived).toBe(false);
 
     // CRITICAL RULE 2 CHECK: Template must NOT have a status property
-    expect((task as Record<string, unknown>).status).toBeUndefined();
+    expect((task as unknown as Record<string, unknown>).status).toBeUndefined();
     expect("status" in task).toBe(false);
   });
 
